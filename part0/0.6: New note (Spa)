@@ -1,0 +1,27 @@
+
+note over browser:
+User create a new note in the text 
+field "gut gemacht" in the form and 
+press the botton 'submit'
+end note
+
+browser->server: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+
+note over server:
+The Server recive only the
+new note in a JSON format
+(Content-type: application/json)
+end note
+note over server:
+{
+content: "gut gemacht",
+date: "2020-03-28T02:02:02.905Z"
+}
+end note
+
+server-->browser: Status Code: 201 Created
+
+note over browser
+rerenders the note list
+end note
+
