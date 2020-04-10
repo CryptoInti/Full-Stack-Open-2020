@@ -1,0 +1,110 @@
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+
+const ShowCountry = ({country}) => {
+  const [ show, toggleShow ] = useState(false);
+  return (
+    <div>
+      <button
+        onClick={() => toggleShow(!show)}
+      >
+       { show ? 'hide' : 'show' } 
+      </button>
+      { show && <DetailCountry country={country} /> }
+    </div>
+  )
+}
+
+const DetailCountry = ({country}) => {
+  console.log('detail', country.name)
+  return (
+    <div>
+      <h1>{country.name}</h1>
+      <p>Capital {country.capital}</p>
+      <p>Population {country.population}</p>
+      <h2>Languages</h2>
+      {country.languages.map((lang, i) => 
+        <li key={i}>{lang.name}</li>
+      )}
+      <br></br>
+      <img width='200px' src={country.flag} alt={country.name}></img>
+  </div>
+  )
+}
+const CountriesToShow = ({countries, newFilter}) => {
+  console.log('in', newFilter)
+  const filter = countries.filter(country => country.name.toLowerCase().indexOf(newFilter) !== -1)
+  console.log('filter', filter)
+
+  const sum = filter.length
+  console.log('Sum', sum)
+  if ( sum === 0 ) {
+    return (
+      <div>
+        Can't find any country with '{newFilter}' try other
+      </div>
+    )
+  }
+  if(sum == 1 ) {
+    return (
+      <div>
+        <DetailCountry country={filter[0]} />
+      </div>
+    )
+  }
+  if(sum <= 4 && sum != 1) { 
+    return (
+      <div>
+        <table>
+          <tbody>
+        {filter.map((country, i) => {
+          return (
+            <div>
+              <tr>
+              <td><p key={i}>{country.name}</p></td>
+              <td><ShowCountry country={country} /></td>
+              </tr>
+            </div>
+          )
+        }
+        )}
+        </tbody>
+        </table>
+      </div>
+    )}
+  if(sum > 4) { return (<div><p>To many countries to show</p></div>)}
+}
+
+const App = () => {
+  const [ countries, setCountries ] = useState([])
+  const [ newFilter, setNewFilter ] = useState([])
+
+  const hook_countries = () => {
+    console.log('effect get countries start')
+    axios
+      .get('https://restcountries.eu/rest/v2/all')
+      .then(r => {
+        console.log('promise of countries get fulfilled or resolved')
+        setCountries(r.data)
+        console.log('countries', JSON.stringify(countries, null, 4))
+      })
+  }
+  useEffect(hook_countries , [] )
+
+  const handlerFindChange = (event) => {
+    console.log('find', event.target.value)
+    setNewFilter(event.target.value)
+  }
+
+  return (
+    <div>
+      <div>
+        Find Countries <input value={newFilter} onChange={handlerFindChange} />
+      </div>
+      <CountriesToShow countries={countries} newFilter={newFilter} />
+    </div>
+  )
+
+}
+
+export default App
