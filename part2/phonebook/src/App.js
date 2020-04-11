@@ -3,6 +3,7 @@ import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import personService from  './services/persons'
 
 const App = () => {
   const [ persons, setPersons ] = useState([]) 
@@ -11,12 +12,22 @@ const App = () => {
   const [ newFilter, setNewFilter ] = useState('')
   const [ showAll, setShowAll ] = useState(true)
 
+  // const hook = () => {
+  //   console.log('effect start')
+  //   axios
+  //     .get('http://localhost:3001/persons')
+  //     .then(r => {
+  //       console.log('promise fulfilled or resolved')
+  //       setPersons(r.data)
+  //     })
+  // }
+  // useEffect(hook , [])
+  
   const hook = () => {
-    console.log('effect start')
-    axios
-      .get('http://localhost:3001/persons')
+  //useEffect(() => {
+    personService
+      .getAll()
       .then(r => {
-        console.log('promise fulfilled or resolved')
         setPersons(r.data)
       })
   }
@@ -27,19 +38,48 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
+      id: persons[persons.length - 1].id + 1,
     }
 
     const found = persons.find(person => person.name === newName)
     console.log('found',found)
     if(found) {
-      alert(`${newName} is already added to phonebook`)
+      if(window.confirm(`${found.name} is already added to phonebook, remplace the old number ${found.number} with the new one ${personObject.number}?`))
+      personService
+        .update(found.id, personObject)
+        .then(r => {
+          console.log('r',r.data)
+          const listPersons = persons.map(p => p.id === found.id ? {...p, number:r.data.number} : p)
+          console.log('listPersons', listPersons)
+          setPersons(listPersons)
+        })
     }else{
-      setPersons(persons.concat(personObject))
+        personService
+          .create(personObject)
+          .then(r => {
+            console.log('rPost', JSON.stringify(r, null, 4))
+            setPersons(persons.concat(r.data))
+          })
       setNewName('')
       setNewNumber('')
     }
     
+  }
+
+  const delPerson = (event) => {
+    console.log('delPerson', event.target.value)
+    const personId = event.target.value
+    const found = persons.find(p => p.id == personId)
+    console.log('found in', JSON.stringify(found, null, 4))
+
+    if(window.confirm(`Detele ${found.name}`) )
+    personService
+    .deletePerson(personId)
+    .then(r => {
+      console.log('delPerson result then', JSON.stringify(r, null, 4))
+      const listPersons = persons.filter(i => i.id != personId)
+      setPersons(listPersons)
+    })
   }
 
   const handleNameChange = (event) => {
@@ -81,7 +121,7 @@ const App = () => {
 
       <h2>Numbers</h2>
       <Persons
-        pTS={personsToShow} />
+        pTS={personsToShow} delPerson={delPerson} />
 
     </div>
   )
