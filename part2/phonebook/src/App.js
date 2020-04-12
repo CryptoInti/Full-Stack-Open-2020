@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import Notification from './components/Notification'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
@@ -11,6 +11,8 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [ newFilter, setNewFilter ] = useState('')
   const [ showAll, setShowAll ] = useState(true)
+  const [ errorMessage, setErrorMessage ] = useState(null)
+  const [ typeError, setTypeError ] = useState('error')
 
   // const hook = () => {
   //   console.log('effect start')
@@ -32,7 +34,7 @@ const App = () => {
       })
   }
   useEffect(hook , [])
-
+  
   const addPerson = (event) => {
     event.preventDefault()
     const personObject = {
@@ -52,6 +54,15 @@ const App = () => {
           const listPersons = persons.map(p => p.id === found.id ? {...p, number:r.data.number} : p)
           console.log('listPersons', listPersons)
           setPersons(listPersons)
+          setErrorMessage(`Person '${personObject.name}' was updated in the server`)
+          setTypeError("update")
+          setTimeout(() => {setErrorMessage(null)}, 3000)
+        })
+        .catch(error => {
+          setErrorMessage(`Person '${personObject.name}' was already removed from server`)
+          setTypeError("error")
+          setTimeout(() => {setErrorMessage(null)}, 3000)
+
         })
     }else{
         personService
@@ -59,27 +70,33 @@ const App = () => {
           .then(r => {
             console.log('rPost', JSON.stringify(r, null, 4))
             setPersons(persons.concat(r.data))
+            setErrorMessage(`Person '${personObject.name}' save it into the server`)
+            setTypeError("create")
+            setTimeout(() => {setErrorMessage(null)}, 3000)
           })
-      setNewName('')
-      setNewNumber('')
-    }
-    
-  }
-
-  const delPerson = (event) => {
-    console.log('delPerson', event.target.value)
-    const personId = event.target.value
-    const found = persons.find(p => p.id == personId)
-    console.log('found in', JSON.stringify(found, null, 4))
-
-    if(window.confirm(`Detele ${found.name}`) )
-    personService
-    .deletePerson(personId)
-    .then(r => {
-      console.log('delPerson result then', JSON.stringify(r, null, 4))
-      const listPersons = persons.filter(i => i.id != personId)
-      setPersons(listPersons)
-    })
+          setNewName('')
+          setNewNumber('')
+        }
+        
+      }
+      
+      const delPerson = (event) => {
+        console.log('delPerson', event.target.value)
+        const personId = event.target.value
+        const found = persons.find(p => p.id == personId)
+        console.log('found in', JSON.stringify(found, null, 4))
+        
+        if(window.confirm(`Detele ${found.name}`) )
+        personService
+        .deletePerson(personId)
+        .then(r => {
+          console.log('delPerson result then', JSON.stringify(r, null, 4))
+          const listPersons = persons.filter(i => i.id != personId)
+          setPersons(listPersons)
+          setErrorMessage(`Person '${found.name}' was removed from server`)
+          setTypeError("error")
+          setTimeout(() => {setErrorMessage(null)}, 3000)
+        })
   }
 
   const handleNameChange = (event) => {
@@ -109,6 +126,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} type={typeError}/>
+
       <Filter filter={newFilter} handle={handleFilterChange} />
       
       <h2>Add a new Person</h2>
