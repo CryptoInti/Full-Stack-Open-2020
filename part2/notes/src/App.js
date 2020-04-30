@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import noteService from './services/notes'
@@ -31,7 +30,6 @@ const App = () => {
       .then(initialNotes => {
         console.log('initialNotes', initialNotes)
         setNotes(initialNotes)
-        console.log('Notes', notes)
       })
   }, [])
   
@@ -54,7 +52,6 @@ const App = () => {
 
   const toggleImportanceOf = id => {
     console.log('id', id)
-    const url = `http://localhost:3001/notes/'${id}`
     const note = notes.find(n => n.id === id)
     const changedNote = { ...note, important: !note.important }
     // console.log('importance of '+id+' needs to be toggled')

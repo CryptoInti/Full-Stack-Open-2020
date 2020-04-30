@@ -1,5 +1,8 @@
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/notes'
+const baseUrl = '/api/notes'
+// const baseUrl = 'http://localhost:3001/api/notes'
+// const baseUrl = 'https://fso-2020-backend-notes.herokuapp.com/api/notes'
+
 
 const getAll = () => {
     const request = axios.get(baseUrl)

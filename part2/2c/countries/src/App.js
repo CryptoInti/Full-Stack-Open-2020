@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
+require('dotenv').config()
 
+// const api_weather_key = '3c5cbea525a02f79dc82a53e7ec4d746'
 const api_weather_key = process.env.REACT_APP_API_WEATHER_KEY
 console.log('api_weather_key', api_weather_key)
-// api key 3c5cbea525a02f79dc82a53e7ec4d746
+// api key REACT_APP_API_WEATHER_KEY=3c5cbea525a02f79dc82a53e7ec4d746 npm start
 
 const ShowWeather = ({weather}) => {
   console.log('weather', JSON.stringify(weather, null, 4))
 
-  if (weather.length == 0) {
+  if (weather.length === 0) {
     return(<div></div>)
   }else{
     return (
@@ -64,7 +66,7 @@ const DetailCountry = ({country}) => {
       <br></br>
       <img width='200px' src={country.flag} alt={country.name}></img>
       <br></br>
-      { country.capital != '' && <ShowWeather weather={weather}/> }
+      { country.capital !== '' && <ShowWeather weather={weather}/> }
   </div>
   )
 }
@@ -82,14 +84,14 @@ const CountriesToShow = ({countries, newFilter}) => {
       </div>
     )
   }
-  if(sum == 1 ) {
+  if(sum === 1 ) {
     return (
       <div>
         <DetailCountry country={filter[0]} />
       </div>
     )
   }
-  if(sum <= 4 && sum != 1) { 
+  if(sum <= 4 && sum !== 1) { 
     return (
       <div>
         <table>

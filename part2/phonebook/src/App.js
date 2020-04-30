@@ -13,20 +13,8 @@ const App = () => {
   const [ showAll, setShowAll ] = useState(true)
   const [ errorMessage, setErrorMessage ] = useState(null)
   const [ typeError, setTypeError ] = useState('error')
-
-  // const hook = () => {
-  //   console.log('effect start')
-  //   axios
-  //     .get('http://localhost:3001/persons')
-  //     .then(r => {
-  //       console.log('promise fulfilled or resolved')
-  //       setPersons(r.data)
-  //     })
-  // }
-  // useEffect(hook , [])
   
   const hook = () => {
-  //useEffect(() => {
     personService
       .getAll()
       .then(r => {
@@ -83,7 +71,7 @@ const App = () => {
       const delPerson = (event) => {
         console.log('delPerson', event.target.value)
         const personId = event.target.value
-        const found = persons.find(p => p.id == personId)
+        const found = persons.find(p => p.id === personId)
         console.log('found in', JSON.stringify(found, null, 4))
         
         if(window.confirm(`Detele ${found.name}`) )
@@ -91,7 +79,7 @@ const App = () => {
         .deletePerson(personId)
         .then(r => {
           console.log('delPerson result then', JSON.stringify(r, null, 4))
-          const listPersons = persons.filter(i => i.id != personId)
+          const listPersons = persons.filter(i => i.id !== personId)
           setPersons(listPersons)
           setErrorMessage(`Person '${found.name}' was removed from server`)
           setTypeError("error")
