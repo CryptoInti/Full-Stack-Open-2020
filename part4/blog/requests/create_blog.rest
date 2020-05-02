@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title":"Learning Deutch",
-  "author":"Nietzsche",
+  "title":"Learning Deutch noch mal",
+  "author":"NietzscheSwei",
   "url":"www.habenicht.de",
-  "likes":"369"
+  "likes":"333"
 }
